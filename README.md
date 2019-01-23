@@ -2,6 +2,19 @@
 
 ## Usage
 
+## Lambda Expression
+
+```C
+int c = lambda(int, (int a,int b){ return a+b; })(1,2); // get c = 3
+```
+
+or
+
+```C
+int (*func)(int,int) = lambda(int, (int a,int b){ return a+b; }); // get function pointer
+int c = func(1,2); // get c = 3
+```
+
 ## ArrayList
 
 ### Initial
