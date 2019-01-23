@@ -113,7 +113,7 @@ void LinkedListInfo() {
     printf("LinkedList\n");
 }
 
-char *LinkedListToString() {
+char *LinkedListToString(void *object) {
     return "LinkedList";
 }
 

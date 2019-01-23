@@ -11,10 +11,15 @@
 
 #define DEF_ARG(name, def_val) ((#name[0]) ? (name + 0) : def_val)
 
+#define lambda(return_type, function_body) \
+    ({ return_type fn function_body fn ;})
+
 typedef struct OBJECT {
     void (*info)();
 
-    char *(*toString)();
+    char *str_ptr;
+
+    char *(*toString)(void *);
 } Object;
 
 void Info(void *object) {
@@ -22,7 +27,63 @@ void Info(void *object) {
 }
 
 char *parseString(void *object) {
-    return ((Object *) object)->toString();
+    return ((Object *) object)->toString(object);
+}
+
+typedef struct INTEGER {
+    Object parent;
+    int data;
+} Integer;
+
+char *IntToString(void *object) {
+    if (((Integer *) object)->parent.str_ptr != NULL) {
+        return ((Integer *) object)->parent.str_ptr;
+    }
+    int val = ((Integer *) object)->data;
+    int tmp = val > 0 ? val : -val;
+    int len = 0;
+    while ((tmp = tmp / 10) > 0) {
+        len++;
+    }
+    char *res = (char *) malloc(sizeof(char) * len + 2);
+    sprintf(res, "%d", val);
+    return res;
+}
+
+Integer *IntVal(int i) {
+    Integer *data = (Integer *) malloc(sizeof(Integer));
+    data->parent.str_ptr = NULL;
+    data->parent.toString = IntToString;
+    data->data = i;
+    return data;
+}
+
+typedef struct LONG {
+    Object parent;
+    long data;
+} Long;
+
+char *LongToString(void *object) {
+    if (((Long *) object)->parent.str_ptr != NULL) {
+        return ((Long *) object)->parent.str_ptr;
+    }
+    long val = ((Long *) object)->data;
+    long tmp = val > 0 ? val : -val;
+    int len = 0;
+    while ((tmp = tmp / 10) > 0) {
+        len++;
+    }
+    char *res = (char *) malloc(sizeof(char) * len + 2);
+    sprintf(res, "%ld", val);
+    return res;
+}
+
+Long *LongVal(long i) {
+    Long *data = (Long *) malloc(sizeof(Long));
+    data->parent.str_ptr = NULL;
+    data->parent.toString = LongToString;
+    data->data = i;
+    return data;
 }
 
 #endif //CUTILITY_COMMON_H

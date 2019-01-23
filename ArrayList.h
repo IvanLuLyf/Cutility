@@ -27,6 +27,16 @@ int ArrayListLocate(ArrayList *v, void *x) {
     return -1;
 }
 
+int ArrayListAppend(ArrayList *v, void *x) {
+    if (v->length >= v->capacity) {
+        fprintf(stderr, "Overflow\n");
+        return 0;
+    }
+    v->data[v->length] = x;
+    v->length++;
+    return 1;
+}
+
 int ArrayListInsert(ArrayList *v, int pos, void *x) {
     int i;
     if (pos < 0 || pos > v->length) {
@@ -88,8 +98,27 @@ void ArrayListInfo() {
     printf("ArrayList\n");
 }
 
-char *ArrayListToString() {
-    return "ArrayList";
+char *ArrayListToString(void *object) {
+    ArrayList *list = (ArrayList *) object;
+    char *res = (char *) malloc(sizeof(char) * 50 * list->length);
+    char *p = res;
+    p[0] = '[';
+    p++;
+    ForEach(list, lambda(void, (void* item){
+            sprintf(p, "%s,", parseString(item));
+            while (*p!=0)p++;
+    }));
+    *(p - 1) = ']';
+    *p = '\0';
+    return res;
+}
+
+int ArrayListCountIf(ArrayList *v, int (*func)(void *)) {
+    int i = 0;
+    ForEach(v, lambda(void, (void* item){
+            if (func(item)) i++;
+    }));
+    return i;
 }
 
 ArrayList *_InitArrayList(int capacity) {
@@ -110,5 +139,13 @@ ArrayList *_InitArrayList(int capacity) {
 }
 
 #define InitArrayList(arg0) _InitArrayList(DEF_ARG(arg0,10))
+
+ArrayList * ArrayListFilter(ArrayList *v, int (*func)(void *)) {
+    ArrayList* res = InitArrayList(v->length);
+    ForEach(v, lambda(void, (void* item){
+            if (func(item))ArrayListAppend(res,item);
+    }));
+    return res;
+}
 
 #endif //CUTILITY_ARRAYLIST_H
