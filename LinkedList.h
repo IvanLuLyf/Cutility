@@ -35,6 +35,24 @@ void *LinkedListGet(LinkedList *v, int pos) {
     return NULL;
 }
 
+int LinkedListSet(LinkedList *v, int pos, void *x) {
+    int i = 0;
+    LinkedNode *p = &v->head;
+    if (pos < 0 || pos > v->length) {
+        fprintf(stderr, "Invalid Position\n");
+        return 0;
+    }
+    while (p != NULL && i < pos + 1) {
+        p = p->next;
+        i++;
+    }
+    if (p != NULL) {
+        p->data = x;
+        return 1;
+    }
+    return 0;
+}
+
 int LinkedListLocate(LinkedList *v, void *x) {
     int i = 0;
     LinkedNode *p = v->head.next;
@@ -114,7 +132,18 @@ void LinkedListInfo() {
 }
 
 char *LinkedListToString(void *object) {
-    return "LinkedList";
+    LinkedList *list = (LinkedList *) object;
+    char *res = (char *) malloc(sizeof(char) * 50 * list->length);
+    char *p = res;
+    p[0] = '[';
+    p++;
+    ForEach(list, lambda(void, (void* item){
+            sprintf(p, "%s,", parseString(item));
+            while (*p!=0)p++;
+    }));
+    *(p - 1) = ']';
+    *p = '\0';
+    return res;
 }
 
 LinkedList *InitLinkedList() {
@@ -125,6 +154,7 @@ LinkedList *InitLinkedList() {
     v->parent.insert = (int (*)(void *, int, void *)) LinkedListInsert;
     v->parent.delete = (int (*)(void *, int)) LinkedListDelete;
     v->parent.get = (void *(*)(void *, int)) LinkedListGet;
+    v->parent.set = (int (*)(void *, int, void *)) LinkedListGet;
     v->parent.locate = (int (*)(void *, void *)) LinkedListLocate;
     v->parent.for_each = (void (*)(void *, void (*)(void *))) LinkedListForEach;
     v->parent.free_self = (void (*)(void *)) FreeLinkedList;

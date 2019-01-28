@@ -12,6 +12,8 @@ typedef struct LIST {
 
     void *(*get)(void *, int);
 
+    int (*set)(void *, int, void *);
+
     int (*locate)(void *, void *);
 
     int (*insert)(void *, int i, void *);
@@ -25,6 +27,10 @@ typedef struct LIST {
 
 void *ListGet(void *list, int i) {
     return ((List *) list)->get(list, i);
+}
+
+int ListSet(void *list, int i, void *x) {
+    return ((List *) list)->set(list, i, x);
 }
 
 int ListLocate(void *list, void *x) {
@@ -45,6 +51,14 @@ void ForEach(void *list, void (*op)(void *)) {
 
 void ListFree(void *list) {
     ((List *) list)->free_self(list);
+}
+
+int ListCountIf(List *v, int (*func)(void *)) {
+    int i = 0;
+    ForEach(v, lambda(void, (void* item){
+            if (func(item)) i++;
+    }));
+    return i;
 }
 
 #endif //CUTILITY_LIST_H

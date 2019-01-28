@@ -18,6 +18,15 @@ void *ArrayListGet(ArrayList *v, int i) {
     return v->data[i];
 }
 
+int ArrayListSet(ArrayList *v, int pos, void *x) {
+    if (pos < 0 || pos > v->length) {
+        fprintf(stderr, "Invalid Position\n");
+        return 0;
+    }
+    v->data[pos] = x;
+    return 1;
+}
+
 int ArrayListLocate(ArrayList *v, void *x) {
     int i;
     for (i = 0; i < v->length; i++) {
@@ -113,14 +122,6 @@ char *ArrayListToString(void *object) {
     return res;
 }
 
-int ArrayListCountIf(ArrayList *v, int (*func)(void *)) {
-    int i = 0;
-    ForEach(v, lambda(void, (void* item){
-            if (func(item)) i++;
-    }));
-    return i;
-}
-
 ArrayList *_InitArrayList(int capacity) {
     ArrayList *v;
     v = malloc(sizeof(ArrayList));
@@ -130,6 +131,7 @@ ArrayList *_InitArrayList(int capacity) {
     v->parent.insert = (int (*)(void *, int, void *)) ArrayListInsert;
     v->parent.delete = (int (*)(void *, int)) ArrayListDelete;
     v->parent.get = (void *(*)(void *, int)) ArrayListGet;
+    v->parent.set = (int (*)(void *, int, void *)) ArrayListSet;
     v->parent.locate = (int (*)(void *, void *)) ArrayListLocate;
     v->parent.for_each = (void (*)(void *, void (*)(void *))) ArrayListForEach;
     v->parent.free_self = (void (*)(void *)) FreeArrayList;
@@ -140,10 +142,10 @@ ArrayList *_InitArrayList(int capacity) {
 
 #define InitArrayList(arg0) _InitArrayList(DEF_ARG(arg0,10))
 
-ArrayList * ArrayListFilter(ArrayList *v, int (*func)(void *)) {
-    ArrayList* res = InitArrayList(v->length);
+ArrayList *ArrayListFilter(ArrayList *v, int (*func)(void *)) {
+    ArrayList *res = InitArrayList(v->length);
     ForEach(v, lambda(void, (void* item){
-            if (func(item))ArrayListAppend(res,item);
+            if (func(item))ArrayListAppend(res, item);
     }));
     return res;
 }
