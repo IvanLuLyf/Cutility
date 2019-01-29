@@ -16,13 +16,15 @@ typedef struct LIST {
 
     int (*locate)(void *, void *);
 
-    int (*insert)(void *, int i, void *);
+    int (*insert)(void *, int, void *);
 
-    int (*delete)(void *, int i);
+    int (*delete)(void *, int);
 
-    void (*for_each)(void *v, void (*op)(void *));
+    void (*for_each)(void *, void (*)(void *));
 
-    void *(*filter)(void *v, int (*op)(void *));
+    void *(*filter)(void *, int (*)(void *));
+
+    void *(*map)(void *, void *(*)(void *));
 
     void (*free_self)(void *v);
 } List;
@@ -65,6 +67,10 @@ int ListCountIf(void *v, int (*func)(void *)) {
 
 List *ListFilter(void *v, int (*func)(void *)) {
     return ((List *) v)->filter(v, func);
+}
+
+List *ListMap(void *v, void *(*func)(void *)) {
+    return ((List *) v)->map(v, func);
 }
 
 #endif //CUTILITY_LIST_H
