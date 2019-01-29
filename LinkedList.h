@@ -146,6 +146,8 @@ char *LinkedListToString(void *object) {
     return res;
 }
 
+LinkedList *LinkedListFilter(LinkedList *v, int (*func)(void *));
+
 LinkedList *InitLinkedList() {
     LinkedList *v;
     v = malloc(sizeof(LinkedList));
@@ -157,10 +159,27 @@ LinkedList *InitLinkedList() {
     v->parent.set = (int (*)(void *, int, void *)) LinkedListGet;
     v->parent.locate = (int (*)(void *, void *)) LinkedListLocate;
     v->parent.for_each = (void (*)(void *, void (*)(void *))) LinkedListForEach;
+    v->parent.filter = (void *(*)(void *, int (*)(void *))) LinkedListFilter;
     v->parent.free_self = (void (*)(void *)) FreeLinkedList;
     v->parent.object.info = LinkedListInfo;
     v->parent.object.toString = LinkedListToString;
     return v;
+}
+
+LinkedList *LinkedListFilter(LinkedList *v, int (*func)(void *)) {
+    LinkedList *res = InitLinkedList();
+    LinkedNode *p, *q;
+    p = &res->head;
+    ForEach(v, lambda(void, (void* item){
+            if (func(item)){
+            q = (LinkedNode*)malloc(sizeof(LinkedNode));
+            q->data = item;
+            p->next = q;
+            p =q;
+    }
+    }));
+    p->next = NULL;
+    return res;
 }
 
 #endif //CUTILITY_LINKEDLIST_H

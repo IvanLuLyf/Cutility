@@ -122,6 +122,8 @@ char *ArrayListToString(void *object) {
     return res;
 }
 
+ArrayList *ArrayListFilter(ArrayList *v, int (*func)(void *));
+
 ArrayList *_InitArrayList(int capacity) {
     ArrayList *v;
     v = malloc(sizeof(ArrayList));
@@ -134,6 +136,7 @@ ArrayList *_InitArrayList(int capacity) {
     v->parent.set = (int (*)(void *, int, void *)) ArrayListSet;
     v->parent.locate = (int (*)(void *, void *)) ArrayListLocate;
     v->parent.for_each = (void (*)(void *, void (*)(void *))) ArrayListForEach;
+    v->parent.filter = (void *(*)(void *, int (*)(void *))) ArrayListFilter;
     v->parent.free_self = (void (*)(void *)) FreeArrayList;
     v->parent.object.info = ArrayListInfo;
     v->parent.object.toString = ArrayListToString;

@@ -22,6 +22,8 @@ typedef struct LIST {
 
     void (*for_each)(void *v, void (*op)(void *));
 
+    void *(*filter)(void *v, int (*op)(void *));
+
     void (*free_self)(void *v);
 } List;
 
@@ -53,12 +55,16 @@ void ListFree(void *list) {
     ((List *) list)->free_self(list);
 }
 
-int ListCountIf(List *v, int (*func)(void *)) {
+int ListCountIf(void *v, int (*func)(void *)) {
     int i = 0;
     ForEach(v, lambda(void, (void* item){
             if (func(item)) i++;
     }));
     return i;
+}
+
+List *ListFilter(void *v, int (*func)(void *)) {
+    return ((List *) v)->filter(v, func);
 }
 
 #endif //CUTILITY_LIST_H
