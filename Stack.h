@@ -17,8 +17,6 @@ typedef struct STACK {
     int (*push)(void *, void *);
 
     int (*empty)(void *);
-
-    void (*free_self)(void *v);
 } Stack;
 
 int StackEmpty(void *v) {
@@ -35,10 +33,6 @@ int StackPush(void *v, void *x) {
 
 void *StackPop(void *v) {
     return ((Stack *) v)->pop(v);
-}
-
-void FreeStack(void *v) {
-    ((Stack *) v)->free_self(v);
 }
 
 #endif //CUTILITY_STACK_H

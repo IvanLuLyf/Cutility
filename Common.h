@@ -20,6 +20,8 @@ typedef struct OBJECT {
     char *str_ptr;
 
     char *(*toString)(void *);
+
+    void (*free_self)(void *v);
 } Object;
 
 void Info(void *object) {
@@ -28,6 +30,10 @@ void Info(void *object) {
 
 char *parseString(void *object) {
     return ((Object *) object)->toString(object);
+}
+
+void Free(void *object) {
+    ((Object *) object)->free_self(object);
 }
 
 typedef struct INTEGER {
@@ -50,9 +56,17 @@ char *IntToString(void *object) {
     return res;
 }
 
+void FreeInteger(void *object) {
+    if (((Integer *) object)->parent.str_ptr != NULL) {
+        free(((Integer *) object)->parent.str_ptr);
+    }
+    free(object);
+}
+
 Integer *IntVal(int i) {
     Integer *data = (Integer *) malloc(sizeof(Integer));
     data->parent.str_ptr = NULL;
+    data->parent.free_self = FreeInteger;
     data->parent.toString = IntToString;
     data->data = i;
     return data;
@@ -78,9 +92,17 @@ char *LongToString(void *object) {
     return res;
 }
 
+void FreeLong(void *object) {
+    if (((Long *) object)->parent.str_ptr != NULL) {
+        free(((Long *) object)->parent.str_ptr);
+    }
+    free(object);
+}
+
 Long *LongVal(long i) {
     Long *data = (Long *) malloc(sizeof(Long));
     data->parent.str_ptr = NULL;
+    data->parent.free_self = FreeLong;
     data->parent.toString = LongToString;
     data->data = i;
     return data;

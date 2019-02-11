@@ -99,6 +99,14 @@ void ArrayListForEach(ArrayList *v, void (*op)(void *)) {
 }
 
 void FreeArrayList(ArrayList *v) {
+    int i;
+    Object *object = NULL;
+    for (i = 0; i < v->length; i++) {
+        object = (Object *) (v->data[i]);
+        if (object->free_self != NULL) {
+            object->free_self(object);
+        }
+    }
     free(v->data);
     free(v);
 }
@@ -140,7 +148,7 @@ ArrayList *_InitArrayList(int capacity) {
     v->parent.for_each = (void (*)(void *, void (*)(void *))) ArrayListForEach;
     v->parent.filter = (void *(*)(void *, int (*)(void *))) ArrayListFilter;
     v->parent.map = (void *(*)(void *, void *(*)(void *))) ArrayListMap;
-    v->parent.free_self = (void (*)(void *)) FreeArrayList;
+    v->parent.object.free_self = (void (*)(void *)) FreeArrayList;
     v->parent.object.info = ArrayListInfo;
     v->parent.object.toString = ArrayListToString;
     return v;

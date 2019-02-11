@@ -119,8 +119,13 @@ void LinkedListForEach(LinkedList *v, void (*op)(void *)) {
 
 void FreeLinkedList(LinkedList *v) {
     LinkedNode *p = v->head.next, *q;
+    Object *object = NULL;
     while (p != NULL) {
         q = p;
+        object = (Object *) (q->data);
+        if (object->free_self != NULL) {
+            object->free_self(object);
+        }
         p = p->next;
         free(q);
     }
@@ -148,6 +153,8 @@ char *LinkedListToString(void *object) {
 
 LinkedList *LinkedListFilter(LinkedList *v, int (*func)(void *));
 
+LinkedList *LinkedListMap(LinkedList *v, void *(*func)(void *));
+
 LinkedList *InitLinkedList() {
     LinkedList *v;
     v = malloc(sizeof(LinkedList));
@@ -160,7 +167,8 @@ LinkedList *InitLinkedList() {
     v->parent.locate = (int (*)(void *, void *)) LinkedListLocate;
     v->parent.for_each = (void (*)(void *, void (*)(void *))) LinkedListForEach;
     v->parent.filter = (void *(*)(void *, int (*)(void *))) LinkedListFilter;
-    v->parent.free_self = (void (*)(void *)) FreeLinkedList;
+    v->parent.map = (void *(*)(void *, void *(*)(void *))) LinkedListMap;
+    v->parent.object.free_self = (void (*)(void *)) FreeLinkedList;
     v->parent.object.info = LinkedListInfo;
     v->parent.object.toString = LinkedListToString;
     return v;
@@ -174,6 +182,23 @@ LinkedList *LinkedListFilter(LinkedList *v, int (*func)(void *)) {
             if (func(item)){
             q = (LinkedNode*)malloc(sizeof(LinkedNode));
             q->data = item;
+            p->next = q;
+            p =q;
+    }
+    }));
+    p->next = NULL;
+    return res;
+}
+
+
+LinkedList *LinkedListMap(LinkedList *v, void *(*func)(void *)) {
+    LinkedList *res = InitLinkedList();
+    LinkedNode *p, *q;
+    p = &res->head;
+    ForEach(v, lambda(void, (void* item){
+            if (func(item)){
+            q = (LinkedNode*)malloc(sizeof(LinkedNode));
+            q->data = func(item);
             p->next = q;
             p =q;
     }

@@ -25,8 +25,6 @@ typedef struct LIST {
     void *(*filter)(void *, int (*)(void *));
 
     void *(*map)(void *, void *(*)(void *));
-
-    void (*free_self)(void *v);
 } List;
 
 void *ListGet(void *list, int i) {
@@ -51,10 +49,6 @@ int ListDelete(void *list, int i) {
 
 void ForEach(void *list, void (*op)(void *)) {
     ((List *) list)->for_each(list, op);
-}
-
-void ListFree(void *list) {
-    ((List *) list)->free_self(list);
 }
 
 int ListCountIf(void *v, int (*func)(void *)) {

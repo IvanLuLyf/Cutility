@@ -42,6 +42,14 @@ void *ArrayStackPop(ArrayStack *v) {
 }
 
 void FreeArrayStack(ArrayStack *v) {
+    int i;
+    Object *object = NULL;
+    for (i = 0; i < v->top; i++) {
+        object = (Object *) (v->data[i]);
+        if (object->free_self != NULL) {
+            object->free_self(object);
+        }
+    }
     free(v->data);
     free(v);
 }
@@ -56,7 +64,7 @@ ArrayStack *_InitArrayStack(int capacity) {
     v->parent.push = (int (*)(void *, void *)) ArrayStackPush;
     v->parent.pop = (void *(*)(void *)) ArrayStackPop;
     v->parent.empty = (int (*)(void *)) ArrayStackEmpty;
-    v->parent.free_self = (void (*)(void *)) FreeArrayStack;
+    v->parent.object.free_self = (void (*)(void *)) FreeArrayStack;
     return v;
 }
 
