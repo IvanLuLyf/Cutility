@@ -40,4 +40,21 @@ ArrayListInsertMany(list, 2, IntVal(1), IntVal(2)); // Insert some variables
 ArrayListAppend(list, IntVal(10)); // Insert into back of list
 ```
 
+### Delete
+
+```C
+ArrayListDelete(list,0); // Delete at specified position
+```
+
+### Get
+
+```C
+ArrayListGet(list,0);// Get value at specified position
+```
+
+### Set
+
+```C
+ArrayListSet(list,0,IntVal(2)); //Set value at specified position with specified data
+```
 
