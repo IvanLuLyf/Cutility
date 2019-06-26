@@ -58,3 +58,9 @@ ArrayListGet(list,0);// Get value at specified position
 ArrayListSet(list,0,IntVal(2)); //Set value at specified position with specified data
 ```
 
+## LinkedList
+
+## List
+
+
+
